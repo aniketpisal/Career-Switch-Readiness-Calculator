@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Career Switch Readiness Calculator - IT in India</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f9ff;
+      padding: 30px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h2, h3 {
+      text-align: center;
+      color: #2b3e5c;
+    }
+    label {
+      margin-top: 15px;
+      font-weight: bold;
+      display: block;
+    }
+    select, input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #result {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 6px;
+      display: none;
+      background-color: #e9f9e8;
+      color: #174f1c;
+    }
+    .company-list {
+      background: #fff;
+      border: 1px solid #cbe2cb;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 6px;
+    }
+    .cta-box {
+      margin-top: 25px;
+      padding: 20px;
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>💼 Career Switch Readiness Calculator</h2>
+
+  <label for="domain">Current Job Domain:</label>
+  <select id="domain">
+    <option value="">-- Select --</option>
+    <option value="nontech">Non-IT (e.g., BPO, Sales, HR)</option>
+    <option value="semiit">Semi-Tech (MIS, Support, Data Entry)</option>
+    <option value="technical">Already in IT (but not coding)</option>
+  </select>
+
+  <label for="education">Your Education:</label>
+  <select id="education" onchange="toggleManualEducation()">
+    <option value="">-- Select --</option>
+    <option value="nonit">BA/BCom/BSc</option>
+    <option value="bca">BCA/BSc IT</option>
+    <option value="be">BE/BTech</option>
+    <option value="pg">ME/MTech/MCA</option>
+    <option value="manual">Other (Enter Manually)</option>
+  </select>
+  <input type="text" id="manualEducation" placeholder="Eg: BSc Math, MCom, Diploma in Animation" style="display:none; width:100%; margin-top:10px; padding:10px;" />
+
+  <label for="age">Your Age Group:</label>
+  <select id="age">
+    <option value="">-- Select --</option>
+    <option value="20-25">20–25</option>
+    <option value="26-30">26–30</option>
+    <option value="31-35">31–35</option>
+    <option value="35plus">35+</option>
+  </select>
+
+  <label for="time">Daily Learning Time Available:</label>
+  <select id="time">
+    <option value="">-- Select --</option>
+    <option value="1">1 Hour</option>
+    <option value="2">2 Hours</option>
+    <option value="3">3+ Hours</option>
+  </select>
+
+  <label for="coding">Are You Willing to Learn Coding?</label>
+  <select id="coding">
+    <option value="">-- Select --</option>
+    <option value="yes">Yes, Ready to Learn</option>
+    <option value="maybe">Maybe, Still Unsure</option>
+    <option value="no">No</option>
+  </select>
+
+  <label for="goal">Your IT Career Goal:</label>
+  <select id="goal">
+    <option value="">-- Select --</option>
+    <option value="dev">Developer (Java, Python)</option>
+    <option value="testing">Tester / Automation</option>
+    <option value="analytics">Data / Analytics</option>
+    <option value="cloud">Cloud / DevOps</option>
+  </select>
+
+  <button onclick="calculateReadiness()">Check My Readiness</button>
+
+  <div id="result"></div>
+
+  <script>
+    function toggleManualEducation() {
+      const edu = document.getElementById("education").value;
+      const manualInput = document.getElementById("manualEducation");
+      manualInput.style.display = (edu === "manual") ? "block" : "none";
+    }
+
+    function calculateReadiness() {
+      const domain = document.getElementById("domain").value;
+      let education = document.getElementById("education").value;
+      const manualEdu = document.getElementById("manualEducation").value.trim().toLowerCase();
+      const age = document.getElementById("age").value;
+      const time = parseInt(document.getElementById("time").value);
+      const coding = document.getElementById("coding").value;
+      const goal = document.getElementById("goal").value;
+      const result = document.getElementById("result");
+
+      if (!domain || !education || !age || !time || !coding || !goal || (education === "manual" && manualEdu === "")) {
+        result.innerHTML = "❌ Please fill all fields.";
+        result.style.background = "#ffe0e0";
+        result.style.color = "#b20000";
+        result.style.display = "block";
+        return;
+      }
+
+      if (education === "manual") {
+        education = manualEdu;
+      }
+
+      let score = 50;
+
+      // Domain
+      if (domain === "semiit") score += 10;
+      if (domain === "technical") score += 20;
+
+      // Education scoring
+      if (education === "pg" || education.includes("mca") || education.includes("msc it")) score += 10;
+      else if (education === "be" || education.includes("be") || education.includes("b.tech")) score += 10;
+      else if (education === "bca" || education.includes("bca") || education.includes("bsc it")) score += 5;
+      else if (education.includes("bsc") || education.includes("bcom") || education.includes("ba")) score += 2;
+
+      // Age
+      if (age === "31-35") score -= 5;
+      if (age === "35plus") score -= 10;
+
+      // Time
+      if (time === 2) score += 5;
+      if (time === 3) score += 10;
+
+      // Coding interest
+      if (coding === "maybe") score -= 10;
+      if (coding === "no") score -= 25;
+
+      score = Math.max(0, Math.min(100, score));
+
+      let message = `<strong>📊 Your Career Switch Readiness Score: ${score}/100</strong><br><br>`;
+
+      if (score >= 80) {
+        message += `✅ You’re highly ready to switch into IT!<br>Start learning <a href="/fullstack-java-course">Full Stack Java</a> or <a href="/python-course">Python Development</a>.`;
+      } else if (score >= 60) {
+        message += `🟡 You're on the right path.<br>Start with <a href="/java-course">Java Basics</a> and mini-projects.`;
+      } else {
+        message += `🔴 Just getting started.<br>Begin with <a href="/coding-foundation">Foundations of Coding</a> to build your basics.`;
+      }
+
+      message += `
+        <div class="company-list">
+          <h3>👨‍💻 Companies Hiring Career Switchers</h3>
+          <ul>
+            <li>✅ TCS – via Smart Hiring</li>
+            <li>✅ Infosys – Springboard + off-campus</li>
+            <li>✅ Wipro – WILP, Testing, QA</li>
+            <li>✅ Capgemini – Java, Support, Testing</li>
+            <li>✅ Tech Mahindra – Support to IT roles</li>
+            <li>✅ Accenture – Freshers + Switchers</li>
+            <li>✅ Persistent, Cognizant, LTI (Pune-based)</li>
+          </ul>
+          <p>📍 Openings in Pune, Mumbai, Hyderabad & Remote.</p>
+        </div>
+
+        <div class="cta-box">
+          <h3>🚀 Why Choose Our IT Career Switch Courses?</h3>
+          <ul>
+            <li>✅ Zero Coding Background Needed</li>
+            <li>✅ Project-Based Learning + Resume Building</li>
+            <li>✅ Pune/Mumbai Job Support + Mentorship</li>
+            <li>✅ Learn in English + Hindi/Marathi</li>
+          </ul>
+          <p><strong>🎯 Ready to take the leap? Start your journey now!</strong><br>
+          👉 <a href="/contact">Book Free Counseling</a> or <a href="/enroll">Enroll in Our Course</a></p>
+        </div>
+      `;
+
+      result.innerHTML = message;
+      result.style.display = "block";
+      result.style.background = "#e9f9e8";
+      result.style.color = "#174f1c";
+    }
+  </script>
+
+</body>
+</html>
+
+
